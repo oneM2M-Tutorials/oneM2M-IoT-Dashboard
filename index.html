@@ -15,47 +15,61 @@
         <script src="https://code.highcharts.com/stock/highstock.js"></script>
         <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
         <script src="https://code.highcharts.com/stock/modules/export-data.js"></script>
-
+        
         <script>
 
         var originator="Cae-admin";
         var cseUri = "http://127.0.0.1:8080";
         var cseName = "cse-name";
         var refresh = 5000;
-
+		var releaseVersion = "3";	
+        var requestNr = 0;
+			
         function getAEs(){
-            $.ajax({ 
-                type : "GET", 
-                url : cseUri+"/"+cseName+"?rcn=4",
-                headers: {
-                    "X-M2M-Origin": originator,
-                    "Content-Type": "application/json"					
-                },   
-                body:"json",
-                success : function(body,code){
-                    console.log(body);
-                    body["m2m:cb"].ae.forEach(function (ae) {
-                        getCnts(ae.rn)
-                    });
-                }, 
-                error : function(body,status,error) { 
-                } 
-            });
+			
+			var headers={
+				"X-M2M-Origin": originator,
+				"Content-Type": "application/json",
+				"X-M2M-RI": "req"+requestNr
+			}
+			if (releaseVersion != "1"){
+				headers = Object.assign(headers, {"X-M2M-RVI":releaseVersion});
+			}
+			$.ajax({ 
+				type : 'GET', 
+				url : cseUri+"/"+cseName+"?rcn=4",
+				headers: headers,
+				body:"json",
+				success : function(body,code){
+					console.log(body);
+					body["m2m:cb"]["m2m:ae"].forEach(function (ae) {
+						getCnts(ae.rn)
+					});
+				}, 
+				error : function(body,status,error) { 
+				} 
+			});
+			requestNr += 1;
         }
 
         function getCnts(ae_name){
+            var headers={
+				"X-M2M-Origin": originator,
+                "Content-Type": "application/json",
+                "X-M2M-RI": "req"+requestNr
+			}
+			if (releaseVersion != "1"){
+				headers = Object.assign(headers, {"X-M2M-RVI":releaseVersion});
+			}
             $.ajax({ 
                 type : "GET", 
                 url : cseUri+"/"+cseName+"/"+ae_name+"?rcn=4",
-                headers: {
-                    "X-M2M-Origin": originator,
-                    "Content-Type": "application/json"
-				     },   
+                headers: headers,   
                 body:"json",
                 success : function(body,code){
                     console.log(body);
-                    if(body["m2m:ae"].cnt!=undefined){
-                        body["m2m:ae"].cnt.forEach(function (cnt) {
+                    if(body["m2m:ae"]["m2m:cnt"]!=undefined){
+                        body["m2m:ae"]["m2m:cnt"].forEach(function (cnt) {
 
                             $('#cards').append(
                             '<div id="'+ae_name+'-'+cnt.rn+'-chart"></div><br>'
@@ -69,16 +83,22 @@
                 error : function(body,status,error) { 
                 } 
             });
+			requestNr += 1;
         }
 
         function getCin(ae_name,cnt_name,series){
+            var headers={
+				"X-M2M-Origin": originator,
+                "Content-Type": "application/json",
+                "X-M2M-RI": "req"+requestNr
+			}
+			if (releaseVersion != "1"){
+				headers = Object.assign(headers, {"X-M2M-RVI":releaseVersion});
+			}
             $.ajax({ 
                 type : "GET", 
                 url : cseUri+"/"+cseName+"/"+ae_name+"/"+cnt_name+"/la",
-                headers: {
-                    "X-M2M-Origin": originator,
-                    "Content-Type": "application/json"
-                },   
+                headers: headers,   
                 body:"json",
                 success : function(body,code){
                     console.log(body);
@@ -95,20 +115,26 @@
                 error : function(body,status,error) { 
                 } 
             });
+			requestNr += 1;
         }
 
         function getAllCin(ae_name,cnt_name){
+            var headers={
+				"X-M2M-Origin": originator,
+                "Content-Type": "application/json",
+                "X-M2M-RI": "req"+requestNr
+			}
+			if (releaseVersion != "1"){
+				headers = Object.assign(headers, {"X-M2M-RVI":releaseVersion});
+			}
             $.ajax({ 
                 type : "GET", 
                 url : cseUri+"/"+cseName+"/"+ae_name+"/"+cnt_name+"?rcn=4",
-                headers: {
-                    "X-M2M-Origin": originator,
-                    "Content-Type": "application/json"
-                },   
+                headers: headers,   
                 body:"json",
                 success : function(body,code){
                     console.log(body);
-                    var cins = body["m2m:cnt"].cin;
+                    var cins = body["m2m:cnt"]["m2m:cin"];
                     var data = [];
 
                     for (var i=0; i<cins.length; i++) {
@@ -141,6 +167,7 @@
                 error : function(body,status,error) { 
                 } 
             });
+			requestNr = requestNr + 1;
         }
 
         function displayChart(ae_name,cnt_name,data){
