@@ -1,0 +1,12 @@
+{
+    "cse": {
+        "ip": "127.0.0.1",
+        "port": 8080,
+        "id": "CSE-ID",
+        "name": "CSE-NAME",
+        "releaseVersion": "3",
+        "originator": "Cae-admin"
+    }
+
+
+}
