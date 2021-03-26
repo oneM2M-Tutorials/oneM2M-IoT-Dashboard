@@ -5,7 +5,7 @@ var config = require('config');
 var bodyParser = require('body-parser');
 var cors = require('cors');
 
-const stuffRoutes = require('./routes/stuff');
+const stuffRoutes = require('./routes/oneM2M');
 
 const path = require('path');
 var morgan = require('morgan'); // Charge le middleware de logging
