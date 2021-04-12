@@ -54,7 +54,7 @@
                     if (body["m2m:ae"]["m2m:cnt"] != undefined) {
                         body["m2m:ae"]["m2m:cnt"].forEach(function(cnt) {
 
-							if(cnt.rn != "COMMAND"){
+							if((cnt.rn != "COMMAND")&&(cnt.rn != "DESCRIPTOR")){
 								$('#cards').append(
 									'<div id="' + ae_name + '-' + cnt.rn + '-chart"></div><br>'
 								);
